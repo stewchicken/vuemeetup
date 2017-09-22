@@ -26,20 +26,9 @@
 
 
 export default {
-  data() {
-    return {
-      meetups: [
-        {
-          imageUrl: 'http://img.timeoutbeijing.com/201702/20170214122812289.jpg',
-          id: 'xxxbj',
-          title: 'Meetup in Beijing'
-        },
-        {
-          imageUrl: 'http://www.themoneycommando.com/wp-content/uploads/2017/04/Shanghai_780x520.jpg',
-          id: 'xxxsh',
-          title: 'Meetup in Shanghai'
-        }
-      ]
+  computed: {
+    meetups() {
+      return this.$store.getters.featuredMeetups
     }
   },
   methods: {

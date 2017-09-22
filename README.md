@@ -27,3 +27,8 @@ theme
 responsive
 
 router
+
+# vuex for state managment refer to store/index.js
+npm install --save vuex 
+
+main.js to import new modules
