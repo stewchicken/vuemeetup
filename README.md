@@ -32,3 +32,6 @@ router
 npm install --save vuex 
 
 main.js to import new modules
+
+debug vue with chrome
+install vuedev tools extension for chrome

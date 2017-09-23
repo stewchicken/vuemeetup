@@ -10,13 +10,17 @@ export const store = new Vuex.Store({
                 imageUrl: 'http://img.timeoutbeijing.com/201702/20170214122812289.jpg',
                 id: 'xxxbj',
                 title: 'Meetup in Beijing',
-                date: '2017-09-20'
+                date: '2017-09-20',
+                location:'Beijing',
+                description:'Meetup in Beijing'
             },
             {
                 imageUrl: 'http://www.themoneycommando.com/wp-content/uploads/2017/04/Shanghai_780x520.jpg',
                 id: 'xxxsh',
                 title: 'Meetup in Shanghai',
-                date: '2017-09-21'
+                date: '2017-09-21',
+                location:'Shanghai',
+                description:'Meetup in Shanghai'
             }
         ],
         user: {
