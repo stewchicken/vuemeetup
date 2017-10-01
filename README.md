@@ -31,6 +31,9 @@ router
 # vuex for state managment refer to store/index.js
 npm install --save vuex 
 
+# using firebase for backend 
+npm install --save firebase
+
 main.js to import new modules
 
 debug vue with chrome
