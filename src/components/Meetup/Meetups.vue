@@ -35,15 +35,17 @@ export default {
   name:'meetups',
   computed: {
     meetups() {
+      this.$store.dispatch('loadMeetups')
       return this.$store.getters.loadedMeetups
     }
-  },
+  }
+  
+  /*,
   methods: {
     onLoadMeetup(id) {
       //$ means gloabal
       this.$router.push('/meetups/' + id);
     }
-  }
-
+  }*/
 }
 </script>

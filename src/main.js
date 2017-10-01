@@ -14,7 +14,7 @@ import AlertCmp from './components/Shared/Alert.vue'
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 Vue.filter('date', DateFiler)
-Vue.component('app-alert',AlertCmp)
+Vue.component('app-alert', AlertCmp)
 
 /* eslint-disable no-new */
 new Vue({
@@ -29,7 +29,8 @@ new Vue({
       authDomain: 'vuemeetup-9c7b5.firebaseapp.com',
       databaseURL: 'https://vuemeetup-9c7b5.firebaseio.com',
       projectId: 'vuemeetup-9c7b5',
-      storageBucket: 'vuemeetup-9c7b5.appspot.com',
+      storageBucket: 'gs://vuemeetup-9c7b5.appspot.com',
+      // storageBucket: 'vuemeetup-9c7b5.appspot.com',
       messagingSenderId: '788757867956'
     })
   }

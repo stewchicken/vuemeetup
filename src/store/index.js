@@ -30,6 +30,9 @@ export const store = new Vuex.Store({
     },
     // 
     mutations: {
+        setLoadedMeetups(state, payload) {
+            state.loadedMeetups = payload
+        },
         createMeetup(state, payload) {
             state.loadedMeetups.push(payload)
         },
@@ -47,17 +50,65 @@ export const store = new Vuex.Store({
         }
     },
     actions: {
-        createMeetup({ commit }, payload) {
+        loadMeetups({ commit }) {
+            commit('setLoading', true)
+            firebase.database().ref('meetups').once('value')
+                .then((data) => {
+                    const meetups = []
+                    const obj = data.val()
+                    for (let key in obj) {
+                        meetups.push({
+                            id: key,
+                            title: obj[key].title,
+                            description: obj[key].description,
+                            imageUrl: obj[key].imageUrl,
+                            date: obj[key].date,
+                            creatorId: obj[key].creatorId
+                        })
+                    }
+                    commit('setLoadedMeetups', meetups)
+                    commit('setLoading', false)
+                })
+                .catch(
+                (error) => {
+                    console.log(error)
+                    commit('setLoading', false)
+                })
+        },
+        createMeetup({ commit, getters }, payload) {
             const meetup = {
                 title: payload.title,
                 location: payload.location,
-                imageUrl: payload.imageUrl,
                 description: payload.description,
-                date: payload.date,
-                id: 'xxdfafdsafdsa'
+                date: payload.date.toISOString(),
+                createorId: getters.user.id
             }
-            //use firebase to save it
-            commit('createMeetup', meetup)
+            let imageUrl
+            let key
+            firebase.database().ref('meetups').push(meetup)
+                .then((data) => {
+                    key = data.key
+                    return key
+                })
+                .then(key => {
+                    const filename = payload.image.name
+                    const ext = filename.slice(filename.lastIndexOf('.'))
+                    return firebase.storage().ref('meetups/' + key + ext).put(payload.image)
+                })
+                .then(fileData => {
+                    imageUrl = fileData.metadata.downloadURLs[0]
+                    return firebase.database().ref('meetups').child(key).update({ imageUrl: imageUrl })
+                }).then(() => {
+                    commit('createMeetup', {
+                        ...meetup,
+                        imageUrl: imageUrl,
+                        id: key
+                    })
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+            // Reach out to firebase and store it
         },
         signUserUp({ commit }, payload) {
             commit('setLoading', true)
@@ -75,7 +126,7 @@ export const store = new Vuex.Store({
                 }).catch(
                 error => {
                     commit('setLoading', false)
-                    commit('setError',error)
+                    commit('setError', error)
                     console.log(error)
                 })
         },
@@ -94,11 +145,11 @@ export const store = new Vuex.Store({
                 }).catch(
                 error => {
                     commit('setLoading', false)
-                    commit('setError',error)
+                    commit('setError', error)
                     console.log(error)
                 })
         },
-        clearError({commit}){
+        clearError({ commit }) {
             commit('clearError')
         }
     },
@@ -121,10 +172,10 @@ export const store = new Vuex.Store({
         user(state) {
             return state.user
         },
-        loading(state){
+        loading(state) {
             return state.loading
         },
-        error(state){
+        error(state) {
             return state.error
         }
     }
