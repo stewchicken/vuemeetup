@@ -10,11 +10,14 @@ import router from './router'
 import { store } from './store' //it is same as ./store/index.js
 import DateFiler from './filters/date'
 import AlertCmp from './components/Shared/Alert.vue'
+import EditMeetupDetailsDialog from './components/Meetup/Edit/EditMeetupDetailsDialog.vue'
 
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 Vue.filter('date', DateFiler)
+// here you register the component globally , you could also register it locally at where it will be used
 Vue.component('app-alert', AlertCmp)
+Vue.component('app-edit-meetup-details-dialog',EditMeetupDetailsDialog)
 
 /* eslint-disable no-new */
 new Vue({

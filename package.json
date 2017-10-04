@@ -15,7 +15,8 @@
     "vue-devtools": "^3.1.9",
     "vue-router": "^2.7.0",
     "vuetify": "^0.15.1",
-    "vuex": "^2.3.1"
+    "vuex": "^2.3.1",
+    "vuex-persist": "^0.1.8"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

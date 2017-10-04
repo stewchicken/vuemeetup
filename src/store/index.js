@@ -1,8 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VuexPersistence from 'vuex-persist'
 import * as firebase from 'firebase'
 
 Vue.use(Vuex)
+
+const vuexLocal = new VuexPersistence({
+    storage: window.localStorage
+})
 
 export const store = new Vuex.Store({
     state: {
@@ -33,6 +38,20 @@ export const store = new Vuex.Store({
         setLoadedMeetups(state, payload) {
             state.loadedMeetups = payload
         },
+        updateMeetup(state, payload) {
+            const meetup = state.loadedMeetups.find(meetup => {
+                return meetup.id === payload.id
+            })
+            if (payload.title) {
+                meetup.title = payload.title
+            }
+            if (payload.description) {
+                meetup.description = payload.description
+            }
+            if (payload.date) {
+                meetup.date = payload.date
+            }
+        },
         createMeetup(state, payload) {
             state.loadedMeetups.push(payload)
         },
@@ -61,6 +80,7 @@ export const store = new Vuex.Store({
                             id: key,
                             title: obj[key].title,
                             description: obj[key].description,
+                            location: obj[key].location,
                             imageUrl: obj[key].imageUrl,
                             date: obj[key].date,
                             creatorId: obj[key].creatorId
@@ -75,13 +95,41 @@ export const store = new Vuex.Store({
                     commit('setLoading', false)
                 })
         },
+        updateMeetupData({ commit, getters }, payload) {
+            console.log("xxxxx" + payload)
+            console.log("xxxxx  getters " + getters.user.email)
+            console.log("xxxxx  getters" + getters.user.password)
+            commit('setLoading', true)
+            const updateObj = {}
+            if (payload.title) {
+                updateObj.title = payload.title
+            }
+            if (payload.description) {
+                updateObj.description = payload.description
+            }
+            if (payload.date) {
+                updateObj.date = payload.date
+            }
+
+            firebase.database().ref('meetups').
+                child(payload.id).update(updateObj)
+                .then(() => {
+                    commit('setLoading', false)
+                    commit('updateMeetup', payload)
+                }).catch(
+                error => {
+                    commit('setLoading', false)
+                    console.log('xxxx error' + error)
+                })
+        },
         createMeetup({ commit, getters }, payload) {
+            commit('setLoading', true)
             const meetup = {
                 title: payload.title,
                 location: payload.location,
                 description: payload.description,
                 date: payload.date.toISOString(),
-                createorId: getters.user.id
+                creatorId: getters.user.id
             }
             let imageUrl
             let key
@@ -99,6 +147,7 @@ export const store = new Vuex.Store({
                     imageUrl = fileData.metadata.downloadURLs[0]
                     return firebase.database().ref('meetups').child(key).update({ imageUrl: imageUrl })
                 }).then(() => {
+                    commit('setLoading', false)
                     commit('createMeetup', {
                         ...meetup,
                         imageUrl: imageUrl,
@@ -106,6 +155,7 @@ export const store = new Vuex.Store({
                     })
                 })
                 .catch((error) => {
+                    commit('setLoading', false)
                     console.log(error)
                 })
             // Reach out to firebase and store it
@@ -127,7 +177,6 @@ export const store = new Vuex.Store({
                 error => {
                     commit('setLoading', false)
                     commit('setError', error)
-                    console.log(error)
                 })
         },
         signUserIn({ commit }, payload) {
@@ -178,5 +227,9 @@ export const store = new Vuex.Store({
         error(state) {
             return state.error
         }
-    }
+    },
+
+    plugins: [vuexLocal.plugin]
+
+
 })
