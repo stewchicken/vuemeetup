@@ -24,8 +24,7 @@
           <v-carousel-item
             v-for="meetup in meetups"
             :src="meetup.imageUrl"
-            :key="meetup.id"
-            @click="onLoadMeetup(meetup.id)">
+            :key="meetup.id">
             <div class="title">
               {{ meetup.title }}
             </div>
@@ -47,10 +46,41 @@
 export default {
    computed: {
       meetups () {
-        return this.$store.getters.featuredMeetups
+
+          const initMeetups = [
+                        {
+                            imageUrl: 'http://img.timeoutbeijing.com/201702/20170214122812289.jpg',
+                            id: 'xxxbj',
+                            title: 'Meetup in Beijing',
+                            date: new Date(),
+                            location: 'Beijing',
+                            description: 'Meetup in Beijing'
+                        },
+                        {
+                            imageUrl: 'http://www.themoneycommando.com/wp-content/uploads/2017/04/Shanghai_780x520.jpg',
+                            id: 'xxxsh',
+                            title: 'Meetup in Shanghai',
+                            date: new Date(),
+                            location: 'Shanghai',
+                            description: 'Meetup in Shanghai'
+                        },
+                         {
+                            imageUrl: 'http://blog.kudoybook.com/wp-content/uploads/images/Frankfurt_am_Main.jpg',
+                            id: 'xxxffm',
+                            title: 'Meetup in Frankfurt',
+                            date: new Date(),
+                            location: 'Frankfurt',
+                            description: 'Meetup in Frankfurt'
+                        }
+                        // http://blog.kudoybook.com/wp-content/uploads/images/Frankfurt_am_Main.jpg
+                    ]
+        return initMeetups
+        //return this.$store.getters.featuredMeetups
       },
+
       loading () {
-        return this.$store.getters.loading
+        //return this.$store.getters.loading
+        return false
       }
     },
     methods: {

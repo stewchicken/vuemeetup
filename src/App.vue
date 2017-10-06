@@ -10,6 +10,14 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-list>
+      <v-list-tile v-if="userIsAuthenticated" @click="onLogout">
+        <v-list-tile-action>
+          <v-icon>exit_to_app</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>Logout</v-list-tile-content>
+      </v-list-tile>
+      </v-list>
     </v-navigation-drawer>
     <v-toolbar dark class="primary">
       <v-toolbar-side-icon @click.native.stop="sideNav = !sideNav"></v-toolbar-side-icon>
@@ -23,6 +31,10 @@
           {{item.title}}
         </v-btn>
       </v-toolbar-items>
+      <v-btn flat v-if="userIsAuthenticated" @click="onLogout">
+          <v-icon>exit_to_app</v-icon>
+          Sign Out
+        </v-btn>
     </v-toolbar>
     <main>
       <router-view></router-view>
@@ -38,8 +50,8 @@ export default {
     }
   },
   computed: {
-    userIsAuthendicated(){
-      return this.$store.getters.user!==null&&this.$store.getters.user!==undefined
+    userIsAuthenticated() {
+      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     },
     menuItems() {
       let menuItems = [
@@ -47,7 +59,7 @@ export default {
         { icon: 'lock_open', title: 'Sign in', link: '/signin' }
       ]
 
-      if (this.userIsAuthendicated) {
+      if (this.userIsAuthenticated) {
         menuItems = [
           { icon: 'supervisor_account', title: 'View Meetups', link: '/meetups' },
           { icon: 'room', title: 'Organize Meetup', link: '/meetup/new' },
@@ -55,6 +67,11 @@ export default {
         ]
       }
       return menuItems
+    }
+  },
+  methods: {
+    onLogout() {
+      this.$store.dispatch('logout')
     }
   }
 }

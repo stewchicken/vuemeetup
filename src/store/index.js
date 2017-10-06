@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import * as firebase from 'firebase'
+import Router from '../router'
 
 Vue.use(Vuex)
 
@@ -12,22 +13,6 @@ const vuexLocal = new VuexPersistence({
 export const store = new Vuex.Store({
     state: {
         loadedMeetups: [
-            {
-                imageUrl: 'http://img.timeoutbeijing.com/201702/20170214122812289.jpg',
-                id: 'xxxbj',
-                title: 'Meetup in Beijing',
-                date: new Date(),
-                location: 'Beijing',
-                description: 'Meetup in Beijing'
-            },
-            {
-                imageUrl: 'http://www.themoneycommando.com/wp-content/uploads/2017/04/Shanghai_780x520.jpg',
-                id: 'xxxsh',
-                title: 'Meetup in Shanghai',
-                date: new Date(),
-                location: 'Shanghai',
-                description: 'Meetup in Shanghai'
-            }
         ],
         user: null,
         loading: false,
@@ -70,35 +55,44 @@ export const store = new Vuex.Store({
     },
     actions: {
         loadMeetups({ commit }) {
-            commit('setLoading', true)
-            firebase.database().ref('meetups').once('value')
-                .then((data) => {
-                    const meetups = []
-                    const obj = data.val()
-                    for (let key in obj) {
-                        meetups.push({
-                            id: key,
-                            title: obj[key].title,
-                            description: obj[key].description,
-                            location: obj[key].location,
-                            imageUrl: obj[key].imageUrl,
-                            date: obj[key].date,
-                            creatorId: obj[key].creatorId
+
+            //firebase.auth().onAuthStateChanged((user) => {
+            firebase.auth().onAuthStateChanged((user) => {
+                console.log("onAuthStateChanged   user = " + user)
+                if (user) {
+                    //here usr is logged in
+                    commit('setLoading', true)
+                    firebase.database().ref('meetups').once('value')
+                        .then((data) => {
+                            const meetups = []
+                            const obj = data.val()
+                            for (let key in obj) {
+                                meetups.push({
+                                    id: key,
+                                    title: obj[key].title,
+                                    description: obj[key].description,
+                                    location: obj[key].location,
+                                    imageUrl: obj[key].imageUrl,
+                                    date: obj[key].date,
+                                    creatorId: obj[key].creatorId
+                                })
+                            }
+                            commit('setLoadedMeetups', meetups)
+                            commit('setLoading', false)
                         })
-                    }
-                    commit('setLoadedMeetups', meetups)
-                    commit('setLoading', false)
-                })
-                .catch(
-                (error) => {
-                    console.log(error)
-                    commit('setLoading', false)
-                })
+                        .catch(
+                        (error) => {
+                            console.log(error)
+                            commit('setLoading', false)
+                        })
+
+                }
+            })
+
+
         },
         updateMeetupData({ commit, getters }, payload) {
             console.log("xxxxx" + payload)
-            console.log("xxxxx  getters " + getters.user.email)
-            console.log("xxxxx  getters" + getters.user.password)
             commit('setLoading', true)
             const updateObj = {}
             if (payload.title) {
@@ -198,6 +192,15 @@ export const store = new Vuex.Store({
                     console.log(error)
                 })
         },
+        autoSignIn({ commit }, payload) {
+            commit('setUser', { id: payload.uid, registeredMeetups: [] })
+        },
+        logout({ commit }) {
+
+            firebase.auth().signOut()
+            commit('setUser', null)
+            Router.push('/')
+        },
         clearError({ commit }) {
             commit('clearError')
         }
@@ -209,7 +212,8 @@ export const store = new Vuex.Store({
             })
         },
         featuredMeetups(state, getters) {
-            return getters.loadedMeetups.slice(0, 5)
+            return getters.loadedMeetups
+            //  return getters.loadedMeetups.slice(0, 5)
         },
         loadedMeetup(state) {
             return (meetupId) => {

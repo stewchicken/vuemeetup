@@ -35,7 +35,7 @@ export default {
   name:'meetups',
   computed: {
     meetups() {
-      this.$store.dispatch('loadMeetups')
+      //this.$store.dispatch('loadMeetups')
       return this.$store.getters.loadedMeetups
     }
   }

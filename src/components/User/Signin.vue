@@ -41,40 +41,50 @@
   </v-container>
 </template>
 
-<<script>
+<script>
 export default {
-  computed:{
-    user () {
-        return this.$store.getters.user
+  computed: {
+    user() {
+      return this.$store.getters.user
     },
 
-    error(){
-        return this.$store.getters.error
+    error() {
+      return this.$store.getters.error
     },
-    loading(){
-        return this.$store.getters.loading
+    loading() {
+      return this.$store.getters.loading
     }
   },
-  data(){ 
+  data() {
     return {
-    email:'',
-    password:''
-   }
+      email: '',
+      password: ''
+    }
   },
-  watch:{
+  watch: {
     //here refer to computed user(), if user is changed , it will get it as value
-    user (value) {
-        if (value !== null && value !== undefined) {
-          this.$router.push('/')
+    user(value) {
+      if (value !== null && value !== undefined) {
+        let redirect = this.$route.query.redirect
+        if (redirect != '/signin' && redirect !== '' && !!redirect) {
+          this.$router.push(redirect)
+        } else {
+         // this.$router.push('/')
+        this.$router.push('/')
         }
+      } else {
+        //this.$router.push('/')
+        this.$router.push('/')
       }
+    }
   },
-  methods:{
-    onSignin(){
-      this.$store.dispatch('signUserIn',{email:this.email,password:this.password})
+  methods: {
+    onSignin() {
+      this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
+      this.$store.dispatch('loadMeetups')
     },
 
-    onDismissed(){
+    onDismissed() {
       console.log('Dismissed Alert!')
       this.$store.dispatch('clearError')
     }

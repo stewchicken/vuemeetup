@@ -17,7 +17,7 @@ Vue.config.productionTip = false
 Vue.filter('date', DateFiler)
 // here you register the component globally , you could also register it locally at where it will be used
 Vue.component('app-alert', AlertCmp)
-Vue.component('app-edit-meetup-details-dialog',EditMeetupDetailsDialog)
+Vue.component('app-edit-meetup-details-dialog', EditMeetupDetailsDialog)
 
 /* eslint-disable no-new */
 new Vue({
@@ -35,6 +35,15 @@ new Vue({
       storageBucket: 'gs://vuemeetup-9c7b5.appspot.com',
       // storageBucket: 'vuemeetup-9c7b5.appspot.com',
       messagingSenderId: '788757867956'
+    })
+
+
+    firebase.auth().onAuthStateChanged((user) => {
+      console.log("##### onAuthStateChanged in main.js user = " + user)
+      this.$store.dispatch('loadMeetups')
+      if (user) {
+        this.$store.dispatch('autoSignIn', user)
+      }
     })
   }
 })
